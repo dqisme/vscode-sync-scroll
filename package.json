@@ -1,7 +1,7 @@
 {
 	"name": "sync-scroll",
 	"displayName": "Sync Scroll",
-	"description": "Make split windows scroll synchronized",
+	"description": "Make split panels scroll synchronically",
 	"version": "0.0.1",
 	"engines": {
 		"vscode": "^1.45.0"
