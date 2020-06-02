@@ -2,7 +2,7 @@
 	"name": "sync-scroll",
 	"displayName": "Sync Scroll",
 	"description": "Make split panels scroll synchronically",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/dqisme/vscode-sync-scroll.git"
@@ -14,7 +14,9 @@
 		"Other"
 	],
 	"publisher": "dqisme",
-	"activationEvents": ["*"],
+	"activationEvents": [
+		"*"
+	],
 	"main": "./out/extension.js",
 	"icon": "logo.png",
 	"contributes": {
