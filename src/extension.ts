@@ -1,27 +1,46 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// this method is called when your extension is activated
-// your extension is activated the very first time the command is executed
+const countLengthOfLineAt = (lineNumber: number, textEditor: vscode.TextEditor): number =>
+	textEditor.document.lineAt(lineNumber).range.end.character;
+
+const calculatePosition = (position: vscode.Position, scrollingEditor: vscode.TextEditor, scrolledEditor: vscode.TextEditor): vscode.Position =>
+	new vscode.Position(
+		position.line,
+		~~(position.character / countLengthOfLineAt(position.line, scrollingEditor) * countLengthOfLineAt(position.line, scrolledEditor)),
+	);
+
+const calculateRange = (visibleRange: vscode.Range, scrollingEditor: vscode.TextEditor, scrolledEditor: vscode.TextEditor): vscode.Range =>
+	new vscode.Range(
+		calculatePosition(visibleRange.start, scrollingEditor, scrolledEditor),
+		new vscode.Position(visibleRange.start.line + 1, 0),
+	);
+
 export function activate(context: vscode.ExtensionContext) {
-
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "sync-scroll" is now active!');
-
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('sync-scroll.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from Sync Scroll!');
-	});
-
-	context.subscriptions.push(disposable);
+	let scrollingTask: NodeJS.Timeout;
+	let scrollingEditor: vscode.TextEditor;
+	const scrolledEditorsQueue: Set<vscode.TextEditor> = new Set();
+	context.subscriptions.push(
+		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
+			if (scrollingEditor !== textEditor) {
+				if (scrolledEditorsQueue.has(textEditor)) {
+					scrolledEditorsQueue.delete(textEditor);
+					return;	
+				}
+				scrollingEditor = textEditor;
+			}
+			if (scrollingTask) clearTimeout(scrollingTask);
+			scrollingTask = setTimeout(() => {
+				console.log(textEditor)
+				vscode.window.visibleTextEditors
+					.filter(editor => editor !== textEditor)
+					.forEach(editor => {
+						scrolledEditorsQueue.add(editor);
+						editor.revealRange(calculateRange(visibleRanges[0], textEditor, editor), vscode.TextEditorRevealType.AtTop)
+					})
+			}, 100);
+		}),
+		
+	);
 }
 
-// this method is called when your extension is deactivated
 export function deactivate() {}
