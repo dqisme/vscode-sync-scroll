@@ -1,22 +1,16 @@
 # sync-scroll README
 
-Make split panels scroll synchronically
+A Visual Studio Code Extension that make split panels scroll synchronically.
 
 ## Features
 
 This extension support synchronizing scrolling between split panels. It will be auto turned on when there are split panels.
 
-## Extension Settings
+![Scroll synchronically when toggle on](./feature.gif)
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+It also can be toggled by command `Toggle Sync Scroll`.
 
-For example:
-
-This extension contributes the following settings:
-
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
+![Scroll synchronically when toggle on](./feature-command.gif)
 
 ## Release Notes
 
