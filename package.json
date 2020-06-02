@@ -11,7 +11,14 @@
 	],
 	"activationEvents": ["*"],
 	"main": "./out/extension.js",
-	"contributes": {},
+	"contributes": {
+		"commands": [
+			{
+				"command": "sync-scroll.toggle",
+				"title": "Toggle Sync Scroll"
+			}
+		]
+	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
 		"compile": "tsc -p ./",
