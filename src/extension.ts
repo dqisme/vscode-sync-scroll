@@ -16,11 +16,18 @@ const calculateRange = (visibleRange: vscode.Range, scrollingEditor: vscode.Text
 	);
 
 export function activate(context: vscode.ExtensionContext) {
+	let hasSplitPanels = vscode.window.visibleTextEditors.length > 1;
 	let scrollingTask: NodeJS.Timeout;
 	let scrollingEditor: vscode.TextEditor;
 	const scrolledEditorsQueue: Set<vscode.TextEditor> = new Set();
 	context.subscriptions.push(
+		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
+			hasSplitPanels = textEditors.length > 1;
+		}),
 		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
+			if (!hasSplitPanels) {
+				return
+			}
 			if (scrollingEditor !== textEditor) {
 				if (scrolledEditorsQueue.has(textEditor)) {
 					scrolledEditorsQueue.delete(textEditor);
@@ -28,9 +35,10 @@ export function activate(context: vscode.ExtensionContext) {
 				}
 				scrollingEditor = textEditor;
 			}
-			if (scrollingTask) clearTimeout(scrollingTask);
+			if (scrollingTask) {
+				clearTimeout(scrollingTask);
+			}
 			scrollingTask = setTimeout(() => {
-				console.log(textEditor)
 				vscode.window.visibleTextEditors
 					.filter(editor => editor !== textEditor)
 					.forEach(editor => {
@@ -39,7 +47,6 @@ export function activate(context: vscode.ExtensionContext) {
 					})
 			}, 100);
 		}),
-		
 	);
 }
 
