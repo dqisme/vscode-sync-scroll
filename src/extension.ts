@@ -81,7 +81,7 @@ export function activate(context: vscode.ExtensionContext) {
 						scrolledEditorsQueue.add(editor)
 						editor.revealRange(calculateRange(visibleRanges[0], textEditor, editor), vscode.TextEditorRevealType.AtTop)
 					})
-			}, 100)
+			}, 10)
 		}),
 	)
 
