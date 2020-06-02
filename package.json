@@ -16,6 +16,7 @@
 	"publisher": "dqisme",
 	"activationEvents": ["*"],
 	"main": "./out/extension.js",
+	"icon": "logo.png",
 	"contributes": {
 		"commands": [
 			{
