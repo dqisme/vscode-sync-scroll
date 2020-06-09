@@ -4,6 +4,11 @@ All notable changes to the "sync-scroll" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
-## [Unreleased]
 
-- Initial release
+### [1.1.0]
+
+- Add sync mode to choose different ways to scroll.
+
+### [1.0.0]
+
+- Initial release of Sync Scroll

@@ -14,6 +14,12 @@ It also can be toggled by command `Toggle Sync Scroll`.
 
 ## Release Notes
 
+### 1.1.0
+
+Add features:
+
+* Now you can choose a sync mode when it turns on:
+  
 ### 1.0.0
 
 Initial release of Sync Scroll with features:
