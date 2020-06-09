@@ -4,16 +4,16 @@ const [toggleCommand] = require('../package.json').contributes.commands
 const countLengthOfLineAt = (lineNumber: number, textEditor: vscode.TextEditor): number =>
 	textEditor.document.lineAt(lineNumber).range.end.character
 
-const calculatePosition = (position: vscode.Position, scrollingEditor: vscode.TextEditor, scrolledEditor: vscode.TextEditor): vscode.Position =>
+const calculatePosition = (position: vscode.Position, offset: number, scrollingEditor: vscode.TextEditor, scrolledEditor: vscode.TextEditor): vscode.Position =>
 	new vscode.Position(
-		position.line,
-		~~(position.character / countLengthOfLineAt(position.line, scrollingEditor) * countLengthOfLineAt(position.line, scrolledEditor)),
+		position.line + offset,
+		~~(position.character / countLengthOfLineAt(position.line, scrollingEditor) * countLengthOfLineAt(position.line + offset, scrolledEditor)),
 	)
 
-const calculateRange = (visibleRange: vscode.Range, scrollingEditor: vscode.TextEditor, scrolledEditor: vscode.TextEditor): vscode.Range =>
+const calculateRange = (visibleRange: vscode.Range, offset: number, scrollingEditor: vscode.TextEditor, scrolledEditor: vscode.TextEditor): vscode.Range =>
 	new vscode.Range(
-		calculatePosition(visibleRange.start, scrollingEditor, scrolledEditor),
-		new vscode.Position(visibleRange.start.line + 1, 0),
+		calculatePosition(visibleRange.start, offset, scrollingEditor, scrolledEditor),
+		new vscode.Position(visibleRange.start.line + offset + 1, 0),
 	)
 
 const checkSplitPanels = (textEditors: vscode.TextEditor[] = vscode.window.visibleTextEditors): boolean => textEditors.length > 1
@@ -22,6 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 	let scrollingTask: NodeJS.Timeout
 	let scrollingEditor: vscode.TextEditor
 	const scrolledEditorsQueue: Set<vscode.TextEditor> = new Set()
+	const offsetByEditors: Map<vscode.TextEditor, number> = new Map()
 
 	// Status bar item
 	let hasSplitPanels: boolean = checkSplitPanels()
@@ -77,9 +78,12 @@ export function activate(context: vscode.ExtensionContext) {
 			scrollingTask = setTimeout(() => {
 				vscode.window.visibleTextEditors
 					.filter(editor => editor !== textEditor)
-					.forEach(editor => {
-						scrolledEditorsQueue.add(editor)
-						editor.revealRange(calculateRange(visibleRanges[0], textEditor, editor), vscode.TextEditorRevealType.AtTop)
+					.forEach(scrolledEditor => {
+						scrolledEditorsQueue.add(scrolledEditor)
+						scrolledEditor.revealRange(
+							calculateRange(visibleRanges[0], offsetByEditors.get(scrolledEditor) ?? 0, textEditor, scrolledEditor),
+							vscode.TextEditorRevealType.AtTop,
+						)
 					})
 			}, 10)
 		}),
