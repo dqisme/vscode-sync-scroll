@@ -18,7 +18,13 @@ It also can be toggled by command `Toggle Sync Scroll`.
 
 Add features:
 
-* Now you can choose a sync mode when it turns on:
+- Now you can choose a sync mode when it turns on:
+  - NORMAL - aligned by the top of the view range.
+  - OFFSET - aligned by the scrolled lines offset.
+
+Enhancement:
+
+- Get rid of the scrolling delay.
   
 ### 1.0.0
 
