@@ -96,7 +96,7 @@ export function activate(context: vscode.ExtensionContext) {
 							vscode.TextEditorRevealType.AtTop,
 						)
 					})
-			}, 10)
+			}, 0)
 		}),
 	)
 
