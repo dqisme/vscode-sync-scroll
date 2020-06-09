@@ -20,9 +20,14 @@ const checkSplitPanels = (textEditors: vscode.TextEditor[] = vscode.window.visib
 
 export function activate(context: vscode.ExtensionContext) {
 	let scrollingTask: NodeJS.Timeout
-	let scrollingEditor: vscode.TextEditor
+	let scrollingEditor: vscode.TextEditor | null
 	const scrolledEditorsQueue: Set<vscode.TextEditor> = new Set()
 	const offsetByEditors: Map<vscode.TextEditor, number> = new Map()
+	const reset = () => {
+		offsetByEditors.clear()
+		scrolledEditorsQueue.clear()
+		scrollingEditor = null
+	}
 
 	// Status bar item
 	let hasSplitPanels: boolean = checkSplitPanels()
@@ -42,6 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 	const toggleOn = () => {
 		isOn = true;
 		statusBatSwitch.text = 'Sync Scroll: ON'
+		reset();
 	}
 	const toggleOff = () => {
 		isOn = false;
@@ -71,6 +77,11 @@ export function activate(context: vscode.ExtensionContext) {
 					return	
 				}
 				scrollingEditor = textEditor
+				vscode.window.visibleTextEditors
+					.filter(editor => editor !== textEditor)
+					.forEach(scrolledEditor => {
+						offsetByEditors.set(scrolledEditor, scrolledEditor.visibleRanges[0].start.line - textEditor.visibleRanges[0].start.line)
+					})
 			}
 			if (scrollingTask) {
 				clearTimeout(scrollingTask)
