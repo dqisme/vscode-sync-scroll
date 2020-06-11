@@ -2,7 +2,7 @@
 	"name": "sync-scroll",
 	"displayName": "Sync Scroll",
 	"description": "Make split panels scroll synchronically",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/dqisme/vscode-sync-scroll.git"
@@ -30,14 +30,17 @@
 				"title": "Change Sync Scroll Mode"
 			}
 		],
-		"configuration":{
+		"configuration": {
 			"title": "Sync Scroll",
 			"properties": {
 				"syncScroll.mode": {
 					"type": "string",
 					"description": "Select sync scroll mode",
 					"default": "NORMAL",
-					"enum": ["NORMAL", "OFFSET"],
+					"enum": [
+						"NORMAL",
+						"OFFSET"
+					],
 					"enumDescriptions": [
 						"aligned by the top of the view range",
 						"aligned by the scrolled lines offset"
