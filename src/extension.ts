@@ -56,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Register disposables
 	context.subscriptions.push(
-		vscode.commands.registerTextEditorCommand(toggleCommand.command, () => {
+		vscode.commands.registerCommand(toggleCommand.command, () => {
 			if (isOn) {
 				toggleOff()
 			} else {
