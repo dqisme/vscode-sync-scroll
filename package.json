@@ -25,7 +25,21 @@
 				"command": "sync-scroll.toggle",
 				"title": "Toggle Sync Scroll"
 			}
-		]
+		],
+		"configuration":{
+			"title": "Sync Scroll",
+			"properties": {
+				"syncScroll.mode": {
+					"type": "string",
+					"default": "NORMAL",
+					"enum": ["NORMAL", "OFFSET"],
+					"enumDescriptions": [
+						"aligned by the top of the view range",
+						"aligned by the scrolled lines offset"
+					]
+				}
+			}
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

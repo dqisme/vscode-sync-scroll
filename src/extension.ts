@@ -74,14 +74,16 @@ export function activate(context: vscode.ExtensionContext) {
 			if (scrollingEditor !== textEditor) {
 				if (scrolledEditorsQueue.has(textEditor)) {
 					scrolledEditorsQueue.delete(textEditor)
-					return	
+					return
 				}
 				scrollingEditor = textEditor
-				vscode.window.visibleTextEditors
-					.filter(editor => editor !== textEditor)
-					.forEach(scrolledEditor => {
-						offsetByEditors.set(scrolledEditor, scrolledEditor.visibleRanges[0].start.line - textEditor.visibleRanges[0].start.line)
-					})
+				if (vscode.workspace.getConfiguration().get('syncScroll.mode') === 'OFFSET') {
+					vscode.window.visibleTextEditors
+						.filter(editor => editor !== textEditor)
+						.forEach(scrolledEditor => {
+							offsetByEditors.set(scrolledEditor, scrolledEditor.visibleRanges[0].start.line - textEditor.visibleRanges[0].start.line)
+						})
+				}
 			}
 			if (scrollingTask) {
 				clearTimeout(scrollingTask)
@@ -97,6 +99,11 @@ export function activate(context: vscode.ExtensionContext) {
 						)
 					})
 			}, 0)
+		}),
+		vscode.workspace.onDidChangeConfiguration(({ affectsConfiguration }) => {
+			if (affectsConfiguration('syncScroll.mode')) {
+				reset()
+			}
 		}),
 	)
 
