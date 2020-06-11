@@ -22,8 +22,12 @@
 	"contributes": {
 		"commands": [
 			{
-				"command": "sync-scroll.toggle",
+				"command": "syncScroll.toggle",
 				"title": "Toggle Sync Scroll"
+			},
+			{
+				"command": "syncScroll.changeMode",
+				"title": "Change Sync Scroll Mode"
 			}
 		],
 		"configuration":{
@@ -31,6 +35,7 @@
 			"properties": {
 				"syncScroll.mode": {
 					"type": "string",
+					"description": "Select sync scroll mode",
 					"default": "NORMAL",
 					"enum": ["NORMAL", "OFFSET"],
 					"enumDescriptions": [
