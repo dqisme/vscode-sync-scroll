@@ -31,14 +31,24 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// Status bar item
 	let hasSplitPanels: boolean = checkSplitPanels()
-	const statusBatSwitch: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 200)
-	statusBatSwitch.tooltip = toggleCommand.title
-	statusBatSwitch.command = toggleCommand.command
-	const refreshStatusBarItem = () => {
+	const statusBarToggle: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 201)
+	statusBarToggle.tooltip = toggleCommand.title
+	statusBarToggle.command = toggleCommand.command
+	const statusBarMode: vscode.StatusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 200)
+	statusBarMode.tooltip = 'Change Sync Mode'
+	const showOrHideStatusBarItems = () => {
 		if (hasSplitPanels) {
-			statusBatSwitch.show()
+			statusBarToggle.show()
+			statusBarMode.show()
 		} else {
-			statusBatSwitch.hide()
+			statusBarToggle.hide()
+			statusBarMode.hide()
+		}
+	}
+	const updateStatusBarMode = () => {
+		const mode = vscode.workspace.getConfiguration().get('syncScroll.mode')
+		if (mode) {
+			statusBarMode.text = `Sync Scroll Mode: ${mode}`
 		}
 	}
 
@@ -46,12 +56,12 @@ export function activate(context: vscode.ExtensionContext) {
 	let isOn: boolean;
 	const toggleOn = () => {
 		isOn = true;
-		statusBatSwitch.text = 'Sync Scroll: ON'
+		statusBarToggle.text = 'Sync Scroll: ON'
 		reset();
 	}
 	const toggleOff = () => {
 		isOn = false;
-		statusBatSwitch.text = 'Sync Scroll: OFF'
+		statusBarToggle.text = 'Sync Scroll: OFF'
 	}
 
 	// Register disposables
@@ -65,7 +75,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
 			hasSplitPanels = checkSplitPanels(textEditors)
-			refreshStatusBarItem()
+			showOrHideStatusBarItems()
 		}),
 		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
 			if (!hasSplitPanels || !isOn) {
@@ -103,13 +113,15 @@ export function activate(context: vscode.ExtensionContext) {
 		vscode.workspace.onDidChangeConfiguration(({ affectsConfiguration }) => {
 			if (affectsConfiguration('syncScroll.mode')) {
 				reset()
+				updateStatusBarMode()
 			}
 		}),
 	)
 
 	// Init
 	toggleOn()
-	refreshStatusBarItem()
+	showOrHideStatusBarItems()
+	updateStatusBarMode()
 }
 
 export function deactivate() {}
