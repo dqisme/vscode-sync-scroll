@@ -9,6 +9,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 - Add sync mode to choose different ways to scroll.
 - Get rid of the scrolling delay.
+- Fix the issue that cannot toggle on/off when not focus on any editor.
 
 ### [1.0.0]
 

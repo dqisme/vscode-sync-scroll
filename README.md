@@ -25,6 +25,7 @@ Add features:
 Enhancement:
 
 - Get rid of the scrolling delay.
+- Fix the issue that cannot toggle on/off when not focus on any editor.
   
 ### 1.0.0
 
