@@ -1,8 +1,21 @@
 import * as vscode from 'vscode'
-const modeConfigurationKey = 'syncScroll.mode'
+
+const enum ConfigurationKey {
+	mode = 'syncScroll.mode',
+	saveRecentToggleState = 'syncScroll.saveRecentToggleState',
+	workapaceToggleState = 'syncScroll.workapaceToggleState',
+}
+
+enum ToggleState {
+	OFF,
+	ON,
+}
+
 const contributionPoints = require('../package.json').contributes
+
 const [toggleCommand, changeModeCommand] = contributionPoints.commands
-const { [modeConfigurationKey]: modeConfiguration } = contributionPoints.configuration.properties
+
+const { [ConfigurationKey.mode]: modeConfiguration } = contributionPoints.configuration.properties
 
 const countLengthOfLineAt = (lineNumber: number, textEditor: vscode.TextEditor): number =>
 	textEditor.document.lineAt(lineNumber).range.end.character
@@ -20,6 +33,22 @@ const calculateRange = (visibleRange: vscode.Range, offset: number, scrollingEdi
 	)
 
 const checkSplitPanels = (textEditors: vscode.TextEditor[] = vscode.window.visibleTextEditors): boolean => textEditors.length > 1
+
+const saveRecentToggleState = (context: vscode.ExtensionContext, isOn: boolean) => {
+	const selection = ConfigurationKey.saveRecentToggleState
+	const isSave = vscode.workspace.getConfiguration().get(selection)
+
+	const toggleState = isSave ? +isOn : undefined
+
+	const key = ConfigurationKey.workapaceToggleState
+	context.workspaceState.update(key, toggleState)
+}
+
+const getRecentToggleStateConfiguration = (context: vscode.ExtensionContext) => {
+	const key = ConfigurationKey.workapaceToggleState
+	const defaultValue = ToggleState.OFF
+	return context.workspaceState.get(key, defaultValue)
+}
 
 export function activate(context: vscode.ExtensionContext) {
 	let scrollingTask: NodeJS.Timeout
@@ -50,22 +79,24 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}
 	const updateStatusBarMode = () => {
-		const mode = vscode.workspace.getConfiguration().get(modeConfigurationKey)
+		const mode = vscode.workspace.getConfiguration().get(ConfigurationKey.mode)
 		if (mode) {
 			statusBarMode.text = `Sync Scroll Mode: ${mode}`
 		}
 	}
 
 	// Switch to turn on/off
-	let isOn: boolean;
+	let isOn: boolean
 	const toggleOn = () => {
-		isOn = true;
+		isOn = true
 		statusBarToggle.text = 'Sync Scroll: ON'
-		reset();
+		saveRecentToggleState(context, isOn)
+		reset()
 	}
 	const toggleOff = () => {
-		isOn = false;
+		isOn = false
 		statusBarToggle.text = 'Sync Scroll: OFF'
+		saveRecentToggleState(context, isOn)
 	}
 
 	// Register disposables
@@ -86,7 +117,7 @@ export function activate(context: vscode.ExtensionContext) {
 				{
 					placeHolder: modeConfiguration.description,
 				},
-			).then(selectedMode => vscode.workspace.getConfiguration().update(modeConfigurationKey, selectedMode?.label))
+			).then(selectedMode => vscode.workspace.getConfiguration().update(ConfigurationKey.mode, selectedMode?.label))
 		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
 			hasSplitPanels = checkSplitPanels(textEditors)
@@ -102,7 +133,7 @@ export function activate(context: vscode.ExtensionContext) {
 					return
 				}
 				scrollingEditor = textEditor
-				if (vscode.workspace.getConfiguration().get(modeConfigurationKey) === 'OFFSET') {
+				if (vscode.workspace.getConfiguration().get(ConfigurationKey.mode) === 'OFFSET') {
 					vscode.window.visibleTextEditors
 						.filter(editor => editor !== textEditor)
 						.forEach(scrolledEditor => {
@@ -126,15 +157,22 @@ export function activate(context: vscode.ExtensionContext) {
 			}, 0)
 		}),
 		vscode.workspace.onDidChangeConfiguration(({ affectsConfiguration }) => {
-			if (affectsConfiguration(modeConfigurationKey)) {
+			if (affectsConfiguration(ConfigurationKey.mode)) {
 				reset()
 				updateStatusBarMode()
+			}
+			if (affectsConfiguration(ConfigurationKey.saveRecentToggleState)) {
+				saveRecentToggleState(context, isOn)
 			}
 		}),
 	)
 
 	// Init
-	toggleOn()
+	const recentToggleState = getRecentToggleStateConfiguration(context)
+	recentToggleState === ToggleState.ON
+		? toggleOn()
+		: toggleOff()
+
 	showOrHideStatusBarItems()
 	updateStatusBarMode()
 }

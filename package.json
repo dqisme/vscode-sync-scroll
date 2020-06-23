@@ -45,6 +45,11 @@
 						"aligned by the top of the view range",
 						"aligned by the scrolled lines offset"
 					]
+				},
+				"syncScroll.saveRecentToggleState": {
+					"type": "boolean",
+					"description": "Save recent toggle state to workspace state.",
+					"default": false
 				}
 			}
 		}
