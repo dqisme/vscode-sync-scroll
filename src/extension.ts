@@ -55,6 +55,15 @@ export function activate(context: vscode.ExtensionContext) {
 			statusBarMode.hide()
 		}
 	}
+
+	const updateStatusBarToggle = () => {
+		const isOn = context.workspaceState.get(STATE_KEY.IS_ON)
+		if (isOn) {
+			statusBarToggle.text = 'Sync Scroll: ON'
+		} else {
+			statusBarToggle.text = 'Sync Scroll: OFF'
+		}
+	}
 	const updateStatusBarMode = () => {
 		const mode = vscode.workspace.getConfiguration().get(modeConfigurationKey)
 		if (mode) {
@@ -65,12 +74,12 @@ export function activate(context: vscode.ExtensionContext) {
 	// Switch to turn on/off
 	const toggleOn = () => {
 		context.workspaceState.update(STATE_KEY.IS_ON, true)
-		statusBarToggle.text = 'Sync Scroll: ON'
+		updateStatusBarToggle()
 		reset();
 	}
 	const toggleOff = () => {
 		context.workspaceState.update(STATE_KEY.IS_ON, false)
-		statusBarToggle.text = 'Sync Scroll: OFF'
+		updateStatusBarToggle()
 	}
 
 	// Register disposables
@@ -139,9 +148,12 @@ export function activate(context: vscode.ExtensionContext) {
 	)
 
 	// Init
-	toggleOn()
-	showOrHideStatusBarItems()
+	if (context.workspaceState.get(STATE_KEY.IS_ON) === undefined) {
+		toggleOn()
+	}
+	updateStatusBarToggle()
 	updateStatusBarMode()
+	showOrHideStatusBarItems()
 }
 
 export function deactivate() {}
