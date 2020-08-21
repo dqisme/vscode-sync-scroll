@@ -1,5 +1,11 @@
 import * as vscode from 'vscode'
-const modeConfigurationKey = 'syncScroll.mode'
+
+const STATE_KEY = {
+	IS_ON: 'syncScroll.isOn',
+	MODE: 'syncScroll.mode',
+}
+
+const modeConfigurationKey = STATE_KEY.MODE
 const contributionPoints = require('../package.json').contributes
 const [toggleCommand, changeModeCommand] = contributionPoints.commands
 const { [modeConfigurationKey]: modeConfiguration } = contributionPoints.configuration.properties
@@ -57,21 +63,20 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	// Switch to turn on/off
-	let isOn: boolean;
 	const toggleOn = () => {
-		isOn = true;
+		context.workspaceState.update(STATE_KEY.IS_ON, true)
 		statusBarToggle.text = 'Sync Scroll: ON'
 		reset();
 	}
 	const toggleOff = () => {
-		isOn = false;
+		context.workspaceState.update(STATE_KEY.IS_ON, false)
 		statusBarToggle.text = 'Sync Scroll: OFF'
 	}
 
 	// Register disposables
 	context.subscriptions.push(
 		vscode.commands.registerCommand(toggleCommand.command, () => {
-			if (isOn) {
+			if (context.workspaceState.get(STATE_KEY.IS_ON)) {
 				toggleOff()
 			} else {
 				toggleOn()
@@ -93,7 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
 			showOrHideStatusBarItems()
 		}),
 		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
-			if (!hasSplitPanels || !isOn) {
+			if (!hasSplitPanels || !context.workspaceState.get(STATE_KEY.IS_ON)) {
 				return
 			}
 			if (scrollingEditor !== textEditor) {
