@@ -4,11 +4,20 @@ const STATE_KEY = {
 	IS_ON: 'syncScroll.isOn',
 	MODE: 'syncScroll.mode',
 }
-
-const modeConfigurationKey = STATE_KEY.MODE
-const contributionPoints = require('../package.json').contributes
-const [toggleCommand, changeModeCommand] = contributionPoints.commands
-const { [modeConfigurationKey]: modeConfiguration } = contributionPoints.configuration.properties
+const [toggleCommand, changeModeCommand] = require('../package.json').contributes.commands
+const MODE = {
+	type: "string",
+	description: "Select sync scroll mode",
+	default: 'NORMAL',
+	enum: [
+		'NORMAL',
+		'OFFSET',
+	],
+	enumDescriptions: [
+		"aligned by the top of the view range",
+		"aligned by the scrolled lines offset"
+	]
+}
 
 const countLengthOfLineAt = (lineNumber: number, textEditor: vscode.TextEditor): number =>
 	textEditor.document.lineAt(lineNumber).range.end.character
@@ -65,7 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	}
 	const updateStatusBarMode = () => {
-		const mode = vscode.workspace.getConfiguration().get(modeConfigurationKey)
+		const mode = context.workspaceState.get(STATE_KEY.MODE)
 		if (mode) {
 			statusBarMode.text = `Sync Scroll Mode: ${mode}`
 		}
@@ -93,14 +102,17 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 		vscode.commands.registerCommand(changeModeCommand.command, () => {
 			vscode.window.showQuickPick<vscode.QuickPickItem>(
-				modeConfiguration.enum.map((mode: string, index: number) => ({
+				MODE.enum.map((mode: string, index: number) => ({
 					label: mode,
-					description: modeConfiguration.enumDescriptions[index],
+					description: MODE.enumDescriptions[index],
 				})),
 				{
-					placeHolder: modeConfiguration.description,
+					placeHolder: MODE.description,
 				},
-			).then(selectedMode => vscode.workspace.getConfiguration().update(modeConfigurationKey, selectedMode?.label))
+			).then(selectedMode => {
+				context.workspaceState.update(STATE_KEY.MODE, selectedMode?.label)
+				updateStatusBarMode()
+			})
 		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
 			hasSplitPanels = checkSplitPanels(textEditors)
@@ -116,7 +128,7 @@ export function activate(context: vscode.ExtensionContext) {
 					return
 				}
 				scrollingEditor = textEditor
-				if (vscode.workspace.getConfiguration().get(modeConfigurationKey) === 'OFFSET') {
+				if (context.workspaceState.get(STATE_KEY.MODE) === 'OFFSET') {
 					vscode.window.visibleTextEditors
 						.filter(editor => editor !== textEditor)
 						.forEach(scrolledEditor => {
@@ -139,17 +151,14 @@ export function activate(context: vscode.ExtensionContext) {
 					})
 			}, 0)
 		}),
-		vscode.workspace.onDidChangeConfiguration(({ affectsConfiguration }) => {
-			if (affectsConfiguration(modeConfigurationKey)) {
-				reset()
-				updateStatusBarMode()
-			}
-		}),
 	)
 
 	// Init
 	if (context.workspaceState.get(STATE_KEY.IS_ON) === undefined) {
-		toggleOn()
+		context.workspaceState.update(STATE_KEY.IS_ON, true)
+	}
+	if (context.workspaceState.get(STATE_KEY.MODE) === undefined) {
+		context.workspaceState.update(STATE_KEY.MODE, MODE.default)
 	}
 	updateStatusBarToggle()
 	updateStatusBarMode()
