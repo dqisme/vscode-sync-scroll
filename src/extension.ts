@@ -24,7 +24,7 @@ export function activate(context: vscode.ExtensionContext) {
 			AllStates.areVisible = checkSplitPanels(textEditors)
 		}),
 		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
-			if (!AllStates.areVisible || onOffState.isOff()) {
+			if (!AllStates.areVisible || onOffState.isOff() || textEditor.viewColumn === undefined) {
 				return
 			}
 			if (scrollingEditor !== textEditor) {
