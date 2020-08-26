@@ -4,6 +4,10 @@ All notable changes to the "sync-scroll" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### [1.1.1]
+
+- Persist the toggle state and mode
+- Fix back and forth scroll issue in diff(selecting file to compare)/scm(viewing file changes) case.
 
 ### [1.1.0]
 

@@ -14,6 +14,13 @@ There're also commands you can use conveniently.
 
 ## Release Notes
 
+### 1.1.1
+
+Enhancement:
+
+- Persist the toggle state and mode
+- Fix back and forth scroll issue in diff(selecting file to compare)/scm(viewing file changes) case.
+
 ### 1.1.0
 
 Add features:
