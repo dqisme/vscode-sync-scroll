@@ -15,11 +15,16 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const onOffState = new OnOffState(context, reset)
 	const modeState = new ModeState(context)
+	let correspondingLinesHighlight :vscode.TextEditorDecorationType | undefined
 
 	// Register disposables
 	context.subscriptions.push(
-		onOffState.registerCommand(),
-		modeState.registerCommand(),
+		onOffState.registerCommand(() => {
+			correspondingLinesHighlight?.dispose()
+		}),
+		modeState.registerCommand(() => {
+			correspondingLinesHighlight?.dispose()
+		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
 			AllStates.areVisible = checkSplitPanels(textEditors)
 		}),
@@ -56,6 +61,21 @@ export function activate(context: vscode.ExtensionContext) {
 					})
 			}, 0)
 		}),
+		vscode.window.onDidChangeTextEditorSelection(({ selections, textEditor }) => {
+			if (!AllStates.areVisible || onOffState.isOff() || textEditor.viewColumn === undefined) {
+				return
+			}
+			correspondingLinesHighlight?.dispose()
+			correspondingLinesHighlight = vscode.window.createTextEditorDecorationType({ backgroundColor: new vscode.ThemeColor('editor.inactiveSelectionBackground') })
+			vscode.window.visibleTextEditors
+				.filter(editor => editor !== textEditor)
+				.forEach((scrolledEditor) => {
+					scrolledEditor.setDecorations(
+						correspondingLinesHighlight!,
+						selections.map(selection => calculateRange(selection, offsetByEditors.get(scrolledEditor) ?? 0)),
+					)
+				})
+		})
 	)
 
 	AllStates.init(checkSplitPanels())

@@ -40,7 +40,11 @@ abstract class State<T = any> {
     }
     public statusBarItem: vscode.StatusBarItem
     public init = () => this.set(this.get() ?? this.defaultValue)
-    public registerCommand = () => vscode.commands.registerCommand(this.vscodeCommand.command, this.executeCommand.bind(this))
+    public registerCommand = (callback: () => void = () => {}) =>
+        vscode.commands.registerCommand(this.vscodeCommand.command, () => {
+            this.executeCommand.call(this)
+            callback()
+        })
 }
 
 export class OnOffState extends State<ON_OFF> {
