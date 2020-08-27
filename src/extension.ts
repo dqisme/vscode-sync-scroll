@@ -5,28 +5,31 @@ import { OnOffState, ModeState, AllStates } from './states'
 export function activate(context: vscode.ExtensionContext) {
 	let scrollingTask: NodeJS.Timeout
 	let scrollingEditor: vscode.TextEditor | null
+	let correspondingLinesHighlight :vscode.TextEditorDecorationType | undefined
 	const scrolledEditorsQueue: Set<vscode.TextEditor> = new Set()
 	const offsetByEditors: Map<vscode.TextEditor, number> = new Map()
 	const reset = () => {
 		offsetByEditors.clear()
 		scrolledEditorsQueue.clear()
 		scrollingEditor = null
+		clearTimeout(scrollingTask)
+		correspondingLinesHighlight?.dispose()
 	}
 
-	const onOffState = new OnOffState(context, reset)
+	const onOffState = new OnOffState(context)
 	const modeState = new ModeState(context)
-	let correspondingLinesHighlight :vscode.TextEditorDecorationType | undefined
 
 	// Register disposables
 	context.subscriptions.push(
 		onOffState.registerCommand(() => {
-			correspondingLinesHighlight?.dispose()
+			reset()
 		}),
 		modeState.registerCommand(() => {
-			correspondingLinesHighlight?.dispose()
+			reset()
 		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
 			AllStates.areVisible = checkSplitPanels(textEditors)
+			reset()
 		}),
 		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
 			if (!AllStates.areVisible || onOffState.isOff() || textEditor.viewColumn === undefined) {
@@ -44,6 +47,8 @@ export function activate(context: vscode.ExtensionContext) {
 						.forEach(scrolledEditor => {
 							offsetByEditors.set(scrolledEditor, scrolledEditor.visibleRanges[0].start.line - textEditor.visibleRanges[0].start.line)
 						})
+				} else {
+					offsetByEditors.clear()
 				}
 			}
 			if (scrollingTask) {
@@ -55,7 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
 					.forEach(scrolledEditor => {
 						scrolledEditorsQueue.add(scrolledEditor)
 						scrolledEditor.revealRange(
-							calculateRange(visibleRanges[0], offsetByEditors.get(scrolledEditor) ?? 0, textEditor, scrolledEditor),
+							calculateRange(visibleRanges[0], offsetByEditors.get(scrolledEditor), textEditor, scrolledEditor),
 							vscode.TextEditorRevealType.AtTop,
 						)
 					})
@@ -72,7 +77,7 @@ export function activate(context: vscode.ExtensionContext) {
 				.forEach((scrolledEditor) => {
 					scrolledEditor.setDecorations(
 						correspondingLinesHighlight!,
-						selections.map(selection => calculateRange(selection, offsetByEditors.get(scrolledEditor) ?? 0)),
+						selections.map(selection => calculateRange(selection, offsetByEditors.get(scrolledEditor))),
 					)
 				})
 		})

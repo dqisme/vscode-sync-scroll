@@ -19,7 +19,7 @@ abstract class State<T = any> {
     private vscodeCommand: vscode.Command
     protected abstract key: string
     protected abstract defaultValue: T
-    protected abstract executeCommand(): void
+    protected abstract executeCommand(callback: () => void): void
     protected abstract toText(value: T): string
     protected context: vscode.ExtensionContext
     protected constructor(context: vscode.ExtensionContext, statusBarItemPriority: number, vscodeCommand: vscode.Command) {
@@ -42,23 +42,20 @@ abstract class State<T = any> {
     public init = () => this.set(this.get() ?? this.defaultValue)
     public registerCommand = (callback: () => void = () => {}) =>
         vscode.commands.registerCommand(this.vscodeCommand.command, () => {
-            this.executeCommand.call(this)
-            callback()
+            this.executeCommand.call(this, callback)
         })
 }
 
 export class OnOffState extends State<ON_OFF> {
-    private callback: () => void
     protected defaultValue = ON_OFF.ON
     protected key = 'syncScroll.onOff'
     protected toText = (value: string) => `Sync Scroll: ${value}`
-    protected executeCommand() {
+    protected executeCommand(callback: () => void) {
         this.set(this.isOff() ? ON_OFF.ON : ON_OFF.OFF)
-        this.callback()
+        callback()
     }
-    public constructor(context: vscode.ExtensionContext, callback: () => void) {
+    public constructor(context: vscode.ExtensionContext) {
         super(context, 201, toggleCommand)
-        this.callback = callback
     }
     public isOff = () => this.get() === ON_OFF.OFF
 }
@@ -67,7 +64,7 @@ export class ModeState extends State<MODE> {
     protected key = 'syncScroll.mode'
     protected defaultValue = MODE.NORMAL
     protected toText = (value: string) => `Sync Scroll Mode: ${value}`
-    protected executeCommand() {
+    protected executeCommand(callback: () => void) {
         vscode.window.showQuickPick<ModeMenuOption>(
             [{
                 label: MODE.NORMAL,
@@ -79,6 +76,8 @@ export class ModeState extends State<MODE> {
             { placeHolder: 'Select sync scroll mode' },
         ).then(selectedOption => {
             this.set(selectedOption?.label)
+        }).then(() => {
+            callback()
         })
     }
     public constructor(context: vscode.ExtensionContext) {
