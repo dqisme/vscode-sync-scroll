@@ -4,6 +4,11 @@ All notable changes to the "sync-scroll" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### [1.2.0]
+
+- Add corresponding line highlight feature.
+- Fix offset issue when switching from OFFSET to NORMAL mode.
+
 ### [1.1.1]
 
 - Persist the toggle state and mode

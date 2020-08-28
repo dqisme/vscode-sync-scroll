@@ -12,7 +12,19 @@ There're also commands you can use conveniently.
 
 ![Scroll synchronically when toggle on](./screenshot-command.png)
 
+Now it will automatically highlight the corresponding line when you focus the cursor on the one side.
+
 ## Release Notes
+
+### 1.2.0
+
+Add features:
+
+- Add corresponding line highlight feature.
+
+Enhancement:
+
+- Fix back and forth scroll issue in diff(selecting file to compare)/scm(viewing file changes) case.
 
 ### 1.1.1
 
