@@ -8,7 +8,7 @@ const calculateCharacterNumber = (position: vscode.Position, offset: number, scr
 		~~(position.character / countLengthOfLineAt(position.line, scrollingEditor) * countLengthOfLineAt(position.line + offset, scrolledEditor))
 		: 0)
 
-const calculatePosition = (position: vscode.Position, offset: number, scrollingEditor?: vscode.TextEditor, scrolledEditor?: vscode.TextEditor): vscode.Position =>
+export const calculatePosition = (position: vscode.Position, offset: number = 0, scrollingEditor?: vscode.TextEditor, scrolledEditor?: vscode.TextEditor): vscode.Position =>
 	new vscode.Position(
 		position.line + offset,
 		calculateCharacterNumber(position, offset, scrollingEditor, scrolledEditor))
@@ -17,6 +17,9 @@ export const calculateRange = (range: vscode.Range, offset: number = 0, scrollin
 	new vscode.Range(
 		calculatePosition(range.start, offset, scrollingEditor, scrolledEditor),
 		new vscode.Position(range.end.line + offset + 1, 0))
+
+export const wholeLine = (selection: vscode.Selection): vscode.Range =>
+	selection.with(selection.start.with({ character: 0 }), selection.end.with({ character: Infinity }))
 
 export const checkSplitPanels = (textEditors: vscode.TextEditor[] = vscode.window.visibleTextEditors): boolean => textEditors.length > 1
 

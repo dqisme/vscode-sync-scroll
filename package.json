@@ -28,8 +28,29 @@
 			{
 				"command": "syncScroll.changeMode",
 				"title": "Change Sync Scroll Mode"
+			},
+			{
+				"command": "syncScroll.copyToAllCorrespondingPositions",
+				"title": "Copy to All Corresponding Places"
+			},
+			{
+				"command": "syncScroll.jumpToNextPanelCorrespondingPosition",
+				"title": "Jump to Next Panel Corresponding Position"
 			}
-		]
+		],
+		"menus": {
+			
+			"editor/context": [
+				{
+					"command": "syncScroll.jumpToNextPanelCorrespondingPosition",
+					"group": "navigation"
+				},
+				{
+					"command": "syncScroll.copyToAllCorrespondingPositions",
+					"group": "1_modification"
+				}
+			]
+		}
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",

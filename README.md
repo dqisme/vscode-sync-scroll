@@ -12,9 +12,29 @@ There're also commands you can use conveniently.
 
 ![Scroll synchronically when toggle on](./screenshot-command.png)
 
-Now it will automatically highlight the corresponding line when you focus the cursor on the one side.
+Also it will automatically highlight the corresponding selections when you focus the cursor on the one side.
+
+![Corresponding selections highlighted](./feature_highlight.gif)
+
+Here are two commands you can find in the right-click menu in the content window.
+
+![Scroll synchronically when toggle on](./screenshot-right-click-menu.png)
+
+- `Jump to Next Panel Corresponding Position` for navigating around the panels and in the corresponding position. It's very convenient to quick focus on the other side.
+- `Copy to All Corresponding Places` for replacing all the text at corresponding positions from the selections. For example, it's for the case that you want to use the selected text on the left side also on the right side.
 
 ## Release Notes
+
+### 1.3.0
+
+Add features:
+
+- Add command to jump to corresponding position in the next panel
+- Add command to copy selections to all corresponding positions.
+
+Enhancement:
+
+- Fix the issue of the output panel which shouldn't be involved in the scrolling sync.
 
 ### 1.2.0
 
