@@ -1,29 +1,37 @@
-# Sync Scroll README
+# Sync Scroll - Visual Studio Code extension
 
-A Visual Studio Code Extension that make split panels scroll synchronically.
+A Visual Studio Code extension that makes sync scrolling editing easier.
 
 ## Features
 
-This extension support synchronizing scrolling between split panels. You can choose your sync mode to make them scrolled together.
+This extension supports sync scrolling between split panels in different modes:
 
-![Scroll synchronically when toggle on](./feature_mode.gif)
+- **NORMAL**: Sync scroll to the same line
+- **OFFSET**: Sync scroll with the same scrolling distance
+- **OFF**: Turn off sync scroll
 
-There're also commands you can use conveniently.
+You can change the mode of Sync Scroll in the status bar below when VSCode opens split panels.
 
-![Scroll synchronically when toggle on](./screenshot-command.png)
+NOTE: the default mode is **OFF**, plesae select your desired mode after you firstly install it and open split panels.
 
-Also it will automatically highlight the corresponding selections when you focus the cursor on the one side.
+![Sync scroll features](./feature.gif)
 
-![Corresponding selections highlighted](./feature_highlight.gif)
-
-Here are two commands you can find in the right-click menu in the content window.
-
-![Scroll synchronically when toggle on](./screenshot-right-click-menu.png)
+It can help you highlight the corresponding selections when you focus the cursor on the one side.
+Additionally, there are two commands help your cross editing in the right-click menu in the content window when you open the split panels.
 
 - `Jump to Next Panel Corresponding Position` for navigating around the panels and in the corresponding position. It's very convenient to quick focus on the other side.
 - `Copy to All Corresponding Places` for replacing all the text at corresponding positions from the selections. For example, it's for the case that you want to use the selected text on the left side also on the right side.
 
+![Right click menu on the content of split panels](./screenshot-right-click-menu.png)
+
 ## Release Notes
+
+### 1.3.1
+
+Enhancement:
+
+- Simplified the on/off and mode interaction into one menu with three modes: NORMAL, OFFSET and OFF.
+- By default mode is OFF.
 
 ### 1.3.0
 

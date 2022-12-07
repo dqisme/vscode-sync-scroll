@@ -1,7 +1,7 @@
 {
 	"name": "sync-scroll",
 	"displayName": "Sync Scroll",
-	"description": "Make split panels scroll synchronically",
+	"description": "A Visual Studio Code extension that makes sync scrolling editing easier.",
 	"version": "1.3.0",
 	"repository": {
 		"type": "git",

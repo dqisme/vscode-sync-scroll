@@ -4,6 +4,11 @@ All notable changes to the "sync-scroll" extension will be documented in this fi
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+### [1.3.1]
+
+- Simplified the on/off and mode interaction into one menu with three modes: NORMAL, OFFSET and OFF.
+- By default mode is OFF.
+
 ### [1.3.0]
 
 - Add command to jump to corresponding position in the next panel
