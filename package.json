@@ -15,7 +15,7 @@
 	],
 	"publisher": "dqisme",
 	"activationEvents": [
-		"*"
+		"onStartupFinished"
 	],
 	"main": "./out/extension.js",
 	"icon": "logo.png",
