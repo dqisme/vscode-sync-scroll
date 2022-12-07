@@ -1,13 +1,10 @@
 import * as vscode from 'vscode'
-const [toggleCommand, changeModeCommand] = require('../package.json').contributes.commands
+const [changeModeCommand] = require('../package.json').contributes.commands
 
-enum ON_OFF {
-    ON = 'ON',
-    OFF = 'OFF',
-}
 enum MODE {
     NORMAL = 'NORMAL',
     OFFSET = 'OFFSET',
+    OFF = 'OFF'
 } 
 
 interface ModeMenuOption {
@@ -46,34 +43,23 @@ abstract class State<T = any> {
         })
 }
 
-export class OnOffState extends State<ON_OFF> {
-    protected defaultValue = ON_OFF.ON
-    protected key = 'syncScroll.onOff'
-    protected toText = (value: string) => `Sync Scroll: ${value}`
-    protected executeCommand(callback: () => void) {
-        this.set(this.isOff() ? ON_OFF.ON : ON_OFF.OFF)
-        callback()
-    }
-    public constructor(context: vscode.ExtensionContext) {
-        super(context, 201, toggleCommand)
-    }
-    public isOff = () => this.get() === ON_OFF.OFF
-}
-
 export class ModeState extends State<MODE> {
     protected key = 'syncScroll.mode'
-    protected defaultValue = MODE.NORMAL
-    protected toText = (value: string) => `Sync Scroll Mode: ${value}`
+    protected defaultValue = MODE.OFF
+    protected toText = (value: string) => `Sync Scroll: ${value}`
     protected executeCommand(callback: () => void) {
         vscode.window.showQuickPick<ModeMenuOption>(
             [{
                 label: MODE.NORMAL,
-                description: 'aligned by the top of the view range',
+                description: 'Sync scroll to the same line',
             },{
                 label: MODE.OFFSET,
-                description: 'aligned by the scrolled lines offset',
+                description: 'Sync scroll with the same scrolling distance',
+            },{
+                label: MODE.OFF,
+                description: 'Turn off sync scroll',
             }],
-            { placeHolder: 'Select sync scroll mode' },
+            { placeHolder: 'Select Sync Scroll mode' },
         ).then(selectedOption => {
             this.set(selectedOption?.label)
         }).then(() => {
@@ -84,6 +70,8 @@ export class ModeState extends State<MODE> {
         super(context, 200, changeModeCommand)
     }
     public isOffsetMode = () => this.get() === MODE.OFFSET
+    public isNormalMode = () => this.get() === MODE.NORMAL
+    public isOff = () => this.get() === MODE.OFF
 }
 
 export class AllStates {

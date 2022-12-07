@@ -1,6 +1,6 @@
 import * as vscode from 'vscode'
 import { checkSplitPanels, calculateRange, wholeLine, calculatePosition } from './utils'
-import { OnOffState, ModeState, AllStates } from './states'
+import { ModeState, AllStates } from './states'
 
 export function activate(context: vscode.ExtensionContext) {
 	let scrollingTask: NodeJS.Timeout
@@ -16,14 +16,10 @@ export function activate(context: vscode.ExtensionContext) {
 		correspondingLinesHighlight?.dispose()
 	}
 
-	const onOffState = new OnOffState(context)
 	const modeState = new ModeState(context)
 
 	// Register disposables
 	context.subscriptions.push(
-		onOffState.registerCommand(() => {
-			reset()
-		}),
 		modeState.registerCommand(() => {
 			reset()
 		}),
@@ -57,7 +53,7 @@ export function activate(context: vscode.ExtensionContext) {
 			reset()
 		}),
 		vscode.window.onDidChangeTextEditorVisibleRanges(({ textEditor, visibleRanges }) => {
-			if (!AllStates.areVisible || onOffState.isOff() || textEditor.viewColumn === undefined || textEditor.document.uri.scheme === 'output') {
+			if (!AllStates.areVisible || modeState.isOff() || textEditor.viewColumn === undefined || textEditor.document.uri.scheme === 'output') {
 				return
 			}
 			if (scrollingEditor !== textEditor) {
@@ -72,7 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
 						.forEach(scrolledEditor => {
 							offsetByEditors.set(scrolledEditor, scrolledEditor.visibleRanges[0].start.line - textEditor.visibleRanges[0].start.line)
 						})
-				} else {
+				} else if (modeState.isNormalMode()) {
 					offsetByEditors.clear()
 				}
 			}
@@ -92,7 +88,7 @@ export function activate(context: vscode.ExtensionContext) {
 			}, 0)
 		}),
 		vscode.window.onDidChangeTextEditorSelection(({ selections, textEditor }) => {
-			if (!AllStates.areVisible || onOffState.isOff() || textEditor.viewColumn === undefined || textEditor.document.uri.scheme === 'output') {
+			if (!AllStates.areVisible || modeState.isOff() || textEditor.viewColumn === undefined || textEditor.document.uri.scheme === 'output') {
 				return
 			}
 			correspondingLinesHighlight?.dispose()
