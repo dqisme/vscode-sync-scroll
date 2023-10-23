@@ -2,7 +2,7 @@
 	"name": "sync-scroll",
 	"displayName": "Sync Scroll",
 	"description": "A Visual Studio Code extension that makes sync scrolling editing easier.",
-	"version": "1.3.1",
+	"version": "1.3.2",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/dqisme/vscode-sync-scroll.git"
@@ -32,6 +32,9 @@
 			{
 				"command": "syncScroll.jumpToNextPanelCorrespondingPosition",
 				"title": "Jump to Next Panel Corresponding Position"
+			},{
+				"command": "syncScroll.toggle",
+				"title": "Toggle Sync Scroll"
 			}
 		],
 		"menus": {
@@ -65,7 +68,7 @@
 		"@typescript-eslint/parser": "^2.30.0",
 		"eslint": "^6.8.0",
 		"glob": "^7.1.6",
-		"mocha": "^7.1.2",
+		"mocha": "^10.2.0",
 		"typescript": "^3.8.3",
 		"vsce": "^2.15.0",
 		"vscode-test": "^1.3.0"

@@ -1,11 +1,11 @@
 import * as vscode from 'vscode'
 const [changeModeCommand] = require('../package.json').contributes.commands
 
-enum MODE {
+export enum MODE {
     NORMAL = 'NORMAL',
     OFFSET = 'OFFSET',
     OFF = 'OFF'
-} 
+}
 
 interface ModeMenuOption {
     label: MODE
@@ -65,6 +65,9 @@ export class ModeState extends State<MODE> {
         }).then(() => {
             callback()
         })
+    }
+    public toggle(value: MODE){
+        this.set(value)
     }
     public constructor(context: vscode.ExtensionContext) {
         super(context, 200, changeModeCommand)
