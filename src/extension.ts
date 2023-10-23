@@ -54,14 +54,14 @@ export function activate(context: vscode.ExtensionContext) {
 				if(previousState !== MODE.OFF){
 					var tempState: MODE = previousState
 					previousState = MODE.OFF
-					modeState.toggle(tempState)
+					modeState.setMode(tempState)
 				} else {
 					previousState = MODE.OFF
-					modeState.toggle(MODE.NORMAL)
+					modeState.setMode(MODE.NORMAL)
 				}
 			} else {
 				previousState = modeState.isNormalMode() ? MODE.NORMAL : MODE.OFFSET
-				modeState.toggle(MODE.OFF)
+				modeState.setMode(MODE.OFF)
 			}
 		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {

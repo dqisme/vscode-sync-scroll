@@ -66,7 +66,7 @@ export class ModeState extends State<MODE> {
             callback()
         })
     }
-    public toggle(value: MODE){
+    public setMode(value: MODE){
         this.set(value)
     }
     public constructor(context: vscode.ExtensionContext) {
