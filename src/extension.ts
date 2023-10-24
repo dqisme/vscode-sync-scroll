@@ -1,11 +1,12 @@
 import * as vscode from 'vscode'
 import { checkSplitPanels, calculateRange, wholeLine, calculatePosition } from './utils'
-import { ModeState, AllStates } from './states'
+import { MODE, ModeState, AllStates } from './states'
 
 export function activate(context: vscode.ExtensionContext) {
 	let scrollingTask: NodeJS.Timeout
 	let scrollingEditor: vscode.TextEditor | null
 	let correspondingLinesHighlight :vscode.TextEditorDecorationType | undefined
+	let previousState: MODE = MODE.OFF
 	const scrolledEditorsQueue: Set<vscode.TextEditor> = new Set()
 	const offsetByEditors: Map<vscode.TextEditor, number> = new Map()
 	const reset = () => {
@@ -47,6 +48,21 @@ export function activate(context: vscode.ExtensionContext) {
 								calculateRange(selection, offsetByEditors.get(scrolledEditor)),
 								textEditor.document.getText(selection.isEmpty ? wholeLine(selection) : selection) + '\n')))
 				})
+		}),
+		vscode.commands.registerCommand('syncScroll.toggle', () => {
+			if(modeState.isOff()){
+				if(previousState !== MODE.OFF){
+					var tempState: MODE = previousState
+					previousState = MODE.OFF
+					modeState.setMode(tempState)
+				} else {
+					previousState = MODE.OFF
+					modeState.setMode(MODE.NORMAL)
+				}
+			} else {
+				previousState = modeState.isNormalMode() ? MODE.NORMAL : MODE.OFFSET
+				modeState.setMode(MODE.OFF)
+			}
 		}),
 		vscode.window.onDidChangeVisibleTextEditors(textEditors => {
 			AllStates.areVisible = checkSplitPanels(textEditors)
